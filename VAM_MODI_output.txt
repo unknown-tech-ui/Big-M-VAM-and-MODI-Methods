@@ -1,0 +1,66 @@
+===========================================================================
+ TRANSPORTATION PROBLEM: VAM & MODI STEP-BY-STEP
+===========================================================================
+1. PROBLEM DEFINITION & MATRIX:
+       |  D1  |  D2  |  D3  |  D4  || SUPPLY
+---------------------------------------------
+    S1 |  3   |  1   |  7   |  4   | | 300
+    S2 |  2   |  6   |  5   |  9   | | 400
+    S3 |  8   |  3   |  3   |  2   | | 500
+---------------------------------------------
+DEMAND | 250  | 350  | 400  | 200  | 
+
+[Balance Check] Total Supply (1200) == Total Demand (1200). The problem is Balanced.
+
+===========================================================================
+ PHASE 1: VAM (Vogel's Approximation Method) - Finding Initial Solution
+===========================================================================
+Rule: Penalty = (Second Lowest Cost - Lowest Cost) in each row/column.
+Allocate to the cheapest cell in the row or column with the HIGHEST penalty.
+ -> Step 1: Max penalty is Row. Allocating 250 units to Cell(S2, D1) at cost $2.
+ -> Step 2: Max penalty is Row. Allocating 300 units to Cell(S1, D2) at cost $1.
+ -> Step 3: Max penalty is Col. Allocating 200 units to Cell(S3, D4) at cost $2.
+ -> Step 4: Max penalty is Col. Allocating  50 units to Cell(S3, D2) at cost $3.
+ -> Step 5: Max penalty is Row. Allocating 150 units to Cell(S2, D3) at cost $5.
+ -> Step 6: Max penalty is Row. Allocating 250 units to Cell(S3, D3) at cost $3.
+
+Initial Allocation Matrix (VAM):
+      0  300       0       0
+    250    0     150       0
+      0   50     250     200
+---------------------------------------------------------------------------
+ => TOTAL COST BY VAM (Initial Basic Feasible Solution) = $2850
+---------------------------------------------------------------------------
+
+===========================================================================
+ PHASE 2: MODI METHOD - Testing & Optimizing the Solution
+===========================================================================
+Step A: Calculate Dual Variables (u_i, v_j) for ALLOCATED cells.
+Formula: c_ij = u_i + v_j  (We arbitrarily set u_1 = 0 to start)
+ -> Solved Row Variables (u): [0, 4, 2]
+ -> Solved Col Variables (v): [-2, 1, 1, 0]
+
+Step B: Calculate Opportunity Costs (Delta) for EMPTY cells.
+Formula: Delta_ij = c_ij - (u_i + v_j)
+Condition: If ALL Deltas are >= 0, the current solution is perfectly optimal.
+ -> Empty Cell (S1, D1): Cost(3) - [u(0) + v(-2)] = 5
+ -> Empty Cell (S1, D3): Cost(7) - [u(0) + v(1)] = 6
+ -> Empty Cell (S1, D4): Cost(4) - [u(0) + v(0)] = 4
+ -> Empty Cell (S2, D2): Cost(6) - [u(4) + v(1)] = 1
+ -> Empty Cell (S2, D4): Cost(9) - [u(4) + v(0)] = 5
+ -> Empty Cell (S3, D1): Cost(8) - [u(2) + v(-2)] = 8
+
+---------------------------------------------------------------------------
+ => Optimality Check: PASSED. All empty cell Deltas >= 0.
+ => TOTAL COST BY MODI (Final Optimal Solution) = $2850
+---------------------------------------------------------------------------
+
+===========================================================================
+ FINAL SHIPMENT PLAN (ALLOCATIONS)
+===========================================================================
+   [+] Route S1 -> D2 : Ship 300 units (@ $1/unit)
+   [+] Route S2 -> D1 : Ship 250 units (@ $2/unit)
+   [+] Route S2 -> D3 : Ship 150 units (@ $5/unit)
+   [+] Route S3 -> D2 : Ship  50 units (@ $3/unit)
+   [+] Route S3 -> D3 : Ship 250 units (@ $3/unit)
+   [+] Route S3 -> D4 : Ship 200 units (@ $2/unit)
